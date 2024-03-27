@@ -13,10 +13,10 @@ namespace SharedLibrary.Dtos
         public int StatusCode { get; private set; }
 
         [JsonIgnore]
-        public bool IsSuccessful { get; set; }
+        public bool IsSuccessful { get; private set; }
 
 
-        public ErrorDto Error { get; set; }
+        public ErrorDto Error { get; private set; }
 
         public static Response<T> Success(T data, int statusCode)
         {
