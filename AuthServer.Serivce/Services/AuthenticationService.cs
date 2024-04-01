@@ -70,19 +70,48 @@ namespace AuthServer.Service.Services
 
         }
 
-        public Task<Response<ClientTokenDto>> CreateTokenByClient(ClientLoginDto clientLoginDto)
+        public Response<ClientTokenDto> CreateTokenByClient(ClientLoginDto clientLoginDto)
         {
-            throw new NotImplementedException();
+            var client = _clients.SingleOrDefault(x => x.Id == clientLoginDto.ClientId && x.Secret == clientLoginDto.ClientSecret);
+
+            if (client == null) return Response<ClientTokenDto>.Fail("ClientId or ClientSecret not found", 404, true);
+
+            var token = _tokenService.CreateTokenByClient(client);
+
+            return Response<ClientTokenDto>.Success(token, 200);
         }
 
-        public Task<Response<TokenDto>> CreateTokenByRefreshToken(string refreshToken)
+        public async Task<Response<TokenDto>> CreateTokenByRefreshToken(string refreshToken)
         {
-            throw new NotImplementedException();
+            var existRefreshToken = await _userRefreshTokenService.Where(x => x.Code == refreshToken).FirstOrDefaultAsync();
+
+            if (existRefreshToken == null) return Response<TokenDto>.Fail("Refresh token not found", 404, true);
+
+            var user = await _userManager.FindByIdAsync(existRefreshToken.UserId);
+
+            if (user == null) return Response<TokenDto>.Fail("User Id not found", 404, true);
+
+            var tokenDto = _tokenService.CreateToken(user);
+
+            existRefreshToken.Code = tokenDto.RefreshToken;
+            existRefreshToken.Expiration = tokenDto.RefreshTokenExpiration;
+
+            await _unitOfWork.CommitAsync();
+
+            return Response<TokenDto>.Success(tokenDto, 200);
         }
 
-        public Task<Response<NoDataDto>> RevokeRefreshToken(string refreshToken)
+        public async Task<Response<NoDataDto>> RevokeRefreshToken(string refreshToken)
         {
-            throw new NotImplementedException();
+            var existRefreshToken = await _userRefreshTokenService.Where(x => x.Code == refreshToken).SingleOrDefaultAsync();
+
+            if (existRefreshToken == null) return Response<NoDataDto>.Fail("Refresh token not found", 404, true);
+
+            _userRefreshTokenService.Remove(existRefreshToken);
+
+            await _unitOfWork.CommitAsync();
+
+            return Response<NoDataDto>.Success(200);
         }
     }
 }
