@@ -1,3 +1,6 @@
+using SharedLibrary.Configurations;
+using SharedLibrary.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +12,10 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption"));
+var tokenOptions = builder.Configuration.GetSection("TokenOption").Get<CustomTokenOption>();
+
+builder.Services.AddCustomTokenAuth(tokenOptions);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -19,7 +26,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+app.UseAuthentication();
 app.MapControllers();
 
 app.Run();
