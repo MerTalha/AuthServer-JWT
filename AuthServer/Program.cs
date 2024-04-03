@@ -7,10 +7,12 @@ using AuthServer.Data;
 using AuthServer.Data.Repositories;
 using AuthServer.Data.Unit_of_Work;
 using AuthServer.Service.Services;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SharedLibrary.Configurations;
+using SharedLibrary.Extensions;
 using SharedLibrary.NewFolder;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +71,14 @@ builder.Services.AddAuthentication(options =>
 
     };
 });
+
+
+builder.Services.AddControllers().AddFluentValidation(options =>
+{
+    options.RegisterValidatorsFromAssemblyContaining<Program>();
+});
+
+builder.Services.UseCustomValidationResponse();
 
 var app = builder.Build();
 
