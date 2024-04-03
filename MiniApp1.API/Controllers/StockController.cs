@@ -10,7 +10,7 @@ namespace MiniApp1.API.Controllers
     [ApiController]
     public class StockController : ControllerBase
     {
-
+        [HttpGet]
         public IActionResult GetStock()
         {
             var userName = HttpContext.User.Identity.Name;

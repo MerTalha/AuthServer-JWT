@@ -31,9 +31,7 @@ namespace SharedLibrary.Extensions
                     ValidateAudience = true,
                     ValidateIssuer = true,
                     ValidateLifetime = true,
-
-                    //ClockSkew = TimeSpan.Zero
-
+                    ClockSkew = TimeSpan.Zero
                 };
             });
         }
