@@ -83,7 +83,7 @@ namespace AuthServer.Service.Services
                 issuer: _tokenOptions.Issuer,
                 expires: accessTokenExpiration,
                 notBefore: DateTime.Now,
-                claims: GetClaims(userApp, _tokenOptions.Audience),
+                claims: (IEnumerable<Claim>)GetClaims(userApp, _tokenOptions.Audience),
                 signingCredentials: signingCredentials
                 );
 
