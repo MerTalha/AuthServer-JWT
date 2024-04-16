@@ -71,7 +71,7 @@ namespace AuthServer.Service.Services
         }
 
 
-        public TokenDto CreateToken(UserApp userApp)
+        public async Task<TokenDto> CreateTokenAsync(UserApp userApp)
         {
             var accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpiration);
             var refreshTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.RefreshTokenExpiration);
@@ -83,7 +83,7 @@ namespace AuthServer.Service.Services
                 issuer: _tokenOptions.Issuer,
                 expires: accessTokenExpiration,
                 notBefore: DateTime.Now,
-                claims: (IEnumerable<Claim>)GetClaims(userApp, _tokenOptions.Audience),
+                claims: await GetClaims(userApp, _tokenOptions.Audience),
                 signingCredentials: signingCredentials
                 );
 
